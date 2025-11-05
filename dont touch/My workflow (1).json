@@ -1,0 +1,198 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1V9OmrsYkkKWE3O-fZxedclfuIMV0_cDbSFAD778pSdc/edit?usp=drivesdk",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1542775792,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1V9OmrsYkkKWE3O-fZxedclfuIMV0_cDbSFAD778pSdc/edit#gid=1542775792"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        192
+      ],
+      "id": "3e2925aa-40c1-414f-bcba-6a4a4d748219",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bXPI5KPS5GlA4ZnD",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "jessie20050128@gmail.com",
+        "subject": "系統提醒",
+        "message": "={{ $json.output[0].content[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        192
+      ],
+      "id": "4a1820c8-7af8-4075-abd9-310da167eea6",
+      "name": "Send a message",
+      "webhookId": "36527861-2690-4115-850d-96cabbf2e9b8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ib7Dio6yE6aE5B87",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-3.5-turbo-0125",
+          "mode": "list",
+          "cachedResultName": "GPT-3.5-TURBO-0125"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=使用者：{{$json[\"user_id\"]}}\n交易金額：{{$json[\"amount\"]}}\n交易地點：{{$json[\"location\"]}}\n交易時間：{{$json[\"time\"]}}\n狀態：{{$json[\"status\"]}}\n異常原因：{{$json[\"reasons\"]}}\n\n請生成簡短、助理口吻的提醒訊息，告訴使用者需注意這筆交易。\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        608,
+        192
+      ],
+      "id": "dfcef8d5-6e41-40f4-9268-e64e33c6ae0c",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "dDHAF97s2xpf9Kx4",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        192
+      ],
+      "id": "f3206b6d-429a-44c4-826e-71983b445c17",
+      "name": "執行監測"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().filter(item => {\n  const amount = item.json.amount;\n  const location = item.json.location; // 格式：國家-地名，例如 TW-Taipei\n  const countryCode = location.split('-')[0]; // 取 '-' 前面作為國家\n  return amount > 50000 || countryCode !== 'TW';\n});\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        192
+      ],
+      "id": "51be94b6-d013-4633-959b-f3933f347fc4",
+      "name": "找出交易異常"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const amount = item.json.amount;\n  const location = item.json.location; // 格式：TW-Taipei\n  const countryCode = location.split('-')[0];\n\n  let status = \"正常\";\n  let reasons = [];\n\n  if (amount > 50000) reasons.push(\"金額過高\");\n  if (countryCode !== \"TW\") reasons.push(\"國家可能異常\");\n  if (reasons.length > 0) status = \"可能異常\";\n\n  item.json.status = status;\n  item.json.reasons = reasons.join(\"、\");\n  return item;\n});\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        192
+      ],
+      "id": "e4ef8c5b-24e0-473d-9f17-ad03bbe2829f",
+      "name": "整合異常"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "找出交易異常",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "執行監測": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "找出交易異常": {
+      "main": [
+        [
+          {
+            "node": "整合異常",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "整合異常": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "366d148a-d707-409d-a8ec-bfa88291c7f9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "593b04998dd09191e15c0bf9d4e6110e6e214cb3aaec651e168d06e0e2934728"
+  },
+  "id": "QuJUGpcaZC1IBx5A",
+  "tags": []
+}
