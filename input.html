@@ -4,9 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>剩菜變料理（AI + 資料庫）</title>
-  <link rel="stylesheet" href="/input.css">
-  <script src="/input.js"></script>
 
+  <link rel="stylesheet" href="/input.css">
+  <!-- ⭐⭐⭐ 關鍵在這行 -->
+  <script src="/input.js" defer></script>
 </head>
 
 <body>
@@ -18,15 +19,13 @@
 
     <section class="panel">
       <label class="label" for="items">食材輸入</label>
-      <textarea id="items" placeholder="例如：鮭魚, 蛋, 花椰菜, 蒜, 檸檬"></textarea>
+      <textarea id="items"></textarea>
 
       <div class="row">
-        <button id="btnAI">找料理 / 叫 AI</button>
-        <button id="btnSave" class="btn-secondary">存到我的冰箱 🧊</button>
+        <button id="btnAI" type="button">找料理 / 叫 AI</button>
+        <button id="btnSave" type="button" class="btn-secondary">存到我的冰箱 🧊</button>
         <span class="pill" id="modePill">目前模式：AI 生成</span>
       </div>
-
-      <p class="hint">存冰箱前可以先在下面選類別、填有效日期（可不填）。</p>
     </section>
 
     <section id="preview"></section>
