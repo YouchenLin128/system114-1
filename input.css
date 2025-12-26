@@ -1,0 +1,106 @@
+body{
+  font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;
+  max-width:900px;
+  margin:40px auto;
+  padding:0 16px;
+}
+
+textarea,input,button,select{font-size:16px}
+
+textarea{
+  width:100%;
+  min-height:120px;
+  padding:10px;
+  line-height:1.5;
+  border:1px solid #ddd;
+  border-radius:12px;
+  outline:none;
+}
+textarea:focus{border-color:#999}
+
+button{
+  padding:10px 14px;
+  cursor:pointer;
+  border:1px solid #111;
+  border-radius:12px;
+  background:#fff;
+}
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.btn-secondary{
+  border:1px solid #666;
+}
+
+.row{
+  margin:12px 0;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.card{
+  border:1px solid #ddd;
+  border-radius:12px;
+  padding:14px;
+  margin:12px 0;
+}
+
+.muted{color:#666}
+
+pre{
+  white-space:pre-wrap;
+  line-height:1.5;
+  margin:0;
+}
+
+.pill{
+  display:inline-block;
+  padding:4px 10px;
+  border-radius:999px;
+  background:#f3f3f3;
+  font-size:14px;
+  color:#444;
+}
+
+.preview-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:10px;
+}
+
+.preview-row{
+  display:grid;
+  grid-template-columns: 1fr 140px 170px;
+  gap:10px;
+  align-items:center;
+}
+
+.preview-name{
+  padding:8px 10px;
+  border:1px dashed #ddd;
+  border-radius:10px;
+  background:#fafafa;
+}
+
+
+
+
+.preview-select, .preview-date{
+  width:100%;
+  padding:8px 10px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  outline:none;
+}
+
+.preview-select:focus, .preview-date:focus{
+  border-color:#999;
+}
+
+.mt10{ margin-top:10px; }
+.mt12{ margin-top:12px; }
