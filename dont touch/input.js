@@ -1,0 +1,306 @@
+const $ = (s) => document.querySelector(s);
+
+function setLoading(btn, isLoading, textWhenLoading, textWhenDone){
+  btn.disabled = isLoading;
+  btn.textContent = isLoading ? textWhenLoading : textWhenDone;
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function splitItems(raw){
+  return raw
+    .split(/[\n,，、/]+/g)
+    .map(s => s.trim())
+    .filter(Boolean);
+}
+
+const DICT = {
+  "蔬菜": ["花椰菜","高麗菜","白菜","青江菜","菠菜","空心菜","地瓜葉","芥藍","羽衣甘藍","小黃瓜","黃瓜","番茄","茄子","洋蔥","青蔥","蔥","蒜","薑","香菜","九層塔","辣椒","甜椒","紅椒","黃椒","菇","香菇","杏鮑菇","金針菇","鴻喜菇","蘑菇","萵苣","生菜","玉米筍","豆芽","紅蘿蔔","胡蘿蔔","白蘿蔔","蘿蔔"],
+  "海鮮": ["鮭魚","鮪魚","鱈魚","鯖魚","鰻魚","鯛魚","虱目魚","秋刀魚","蝦","蟹","干貝","蛤蜊","文蛤","牡蠣","章魚","魷魚","小卷","透抽","海苔","昆布"],
+  "肉": ["雞","雞胸","雞腿","牛","牛肉","豬","豬肉","羊","羊肉","鴨","鴨腿","培根","火腿","香腸","絞肉","排骨","五花","里肌"],
+  "澱粉": ["飯","白飯","糙米","米","麵","麵條","烏龍麵","拉麵","冬粉","米粉","麵包","吐司","饅頭","餅皮","馬鈴薯","地瓜","芋頭","南瓜"],
+};
+
+function guessCategory(name){
+  for (const [cat, list] of Object.entries(DICT)) {
+    if (list.some(k => name.includes(k))) return cat;
+  }
+  if (name.includes("魚") || name.includes("蝦") || name.includes("貝") || name.includes("蟹")) return "海鮮";
+  if (name.includes("牛") || name.includes("豬") || name.includes("雞") || name.includes("鴨") || name.includes("羊")) return "肉";
+  if (name.includes("麵") || name.includes("飯") || name.includes("米") || name.includes("薯") || name.includes("吐司")) return "澱粉";
+  return "其他";
+}
+
+function renderPreview(items){
+  const box = $("#preview");
+  box.innerHTML = "";
+  if (!items.length) return;
+
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <h3>這次準備存進冰箱的食材（可改類別 / 有效日期可不填）</h3>
+    <div id="previewList" class="preview-list"></div>
+    <p class="muted mt10">（按「存到我的冰箱」就會逐筆寫入 MySQL）</p>
+  `;
+  box.appendChild(card);
+
+  const list = card.querySelector("#previewList");
+  items.forEach((name, idx) => {
+    const cat = guessCategory(name);
+
+    const row = document.createElement("div");
+    row.className = "preview-row";
+    row.innerHTML = `
+      <div class="preview-name">${escapeHtml(name)}</div>
+
+      <select class="preview-select" data-idx="${idx}">
+        ${["蔬菜","海鮮","肉","澱粉","其他"].map(c => `
+          <option value="${c}" ${c===cat ? "selected" : ""}>${c}</option>
+        `).join("")}
+      </select>
+
+      <input class="preview-date" data-idx="${idx}" type="date">
+    `;
+    list.appendChild(row);
+  });
+}
+
+function readPreview(items){
+  const selects = Array.from(document.querySelectorAll(".preview-select"));
+  const dates = Array.from(document.querySelectorAll(".preview-date"));
+
+  return items.map((name, i) => ({
+    name,
+    category: selects[i]?.value || "其他",
+    expire_date: dates[i]?.value ? dates[i].value : null,
+  }));
+}
+
+function renderRecipes(recipes, rawText){
+  const out = $("#out");
+  out.innerHTML = `<p class="muted">✨ 由 AI 生成</p>`;
+
+  if (!recipes || recipes.length === 0) {
+    out.innerHTML += `<p>找不到料理 🥲</p>`;
+    if (rawText) out.innerHTML += `<pre>${escapeHtml(rawText)}</pre>`;
+    return;
+  }
+
+  recipes.forEach((r) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <h3>${escapeHtml(r.title || "")}</h3>
+      <p class="muted">${escapeHtml(r.description || "")}</p>
+      <h4>步驟</h4>
+      <pre>${escapeHtml(r.steps || "")}</pre>
+    `;
+    out.appendChild(card);
+  });
+}
+
+const allItems = []; // 放在最上方，存所有已存入食材
+
+function renderSaveResult(result){
+  // 將這次成功存入的食材加入全域陣列
+  allItems.push(...result.success);
+
+  const out = $("#out");
+
+  // 只清掉輸出區內容，但保留按鈕區域（或者按鈕綁在 html 最上方）
+  out.innerHTML = `
+    <div class="card">
+      <h3>✅ 已存入冰箱</h3>
+
+      <div class="btn-group mt10">
+        <button id="btnAll" class="btn-small">全部</button>
+        <button id="btnExpiring" class="btn-small2">即期</button>
+      </div>
+
+      <div id="fridgeList"></div>
+
+      <p class="muted">成功 ${result.success.length} 筆 / 失敗 ${result.failed.length} 筆</p>
+
+      <h4>失敗</h4>
+      <pre>${escapeHtml(result.failed.map(f =>
+        `- ${f.name} (${f.category}) → ${f.error}`
+      ).join("\n") || "（無）")}</pre>
+    </div>
+  `;
+
+  // 假設 btnAll 與 btnExpiring 已經選好
+const btnAll = document.getElementById("btnAll");
+const btnExpiring = document.getElementById("btnExpiring");
+
+btnAll.addEventListener("click", () => {
+  btnAll.classList.add("active");
+  btnExpiring.classList.remove("active");
+  renderFridgeList(allItems, "all");
+});
+
+btnExpiring.addEventListener("click", () => {
+  btnExpiring.classList.add("active");
+  btnAll.classList.remove("active");
+  renderFridgeList(allItems, "expiring");
+});
+
+
+  // 預設顯示全部
+  renderFridgeList(allItems, "all");
+}
+
+
+
+function renderFridgeList(items, mode){
+  const now = new Date();
+  const twoDaysLater = new Date();
+  twoDaysLater.setDate(now.getDate() + 2);
+
+  let filtered = items;
+  if(mode === "expiring"){
+    filtered = items.filter(s=>{
+      if(!s.expire_date) return false;
+      const d = new Date(s.expire_date);
+      return d >= now && d <= twoDaysLater;
+    });
+  }
+
+  const listContainer = $("#fridgeList");
+  listContainer.innerHTML = ""; // 先清空
+
+  const title = document.createElement("h3");
+  title.textContent = mode === "all" ? "全部食材" : "即期食材 (2天內到期)";
+  if(mode === "expiring") {
+  title.classList.add("expiring-title");
+  }
+  listContainer.appendChild(title);
+
+  if(filtered.length === 0){
+    const empty = document.createElement("p");
+    empty.textContent = "沒有資料 🥲";
+    listContainer.appendChild(empty);
+    return;
+  }
+
+  filtered.forEach((item, idx) => {
+  const row = document.createElement("div");
+  row.className = "fridge-row";
+  row.innerHTML = `
+    <span>${escapeHtml(item.name)} (${item.category}) 到期:${item.expire_date||"未填"} #${item.insertedId}</span>
+    <span class="delete-cross" data-idx="${idx}">❌</span>
+  `;
+  listContainer.appendChild(row);
+});
+
+// 事件監聽
+listContainer.querySelectorAll(".delete-cross").forEach(span=>{
+  span.addEventListener("click", ()=>{
+    const index = parseInt(span.dataset.idx);
+    items.splice(index, 1); // 刪除該筆
+    renderFridgeList(items, mode); // 重新渲染
+  });
+});
+
+}
+
+
+
+
+
+
+// textarea 變動 → 更新預覽
+$("#items").addEventListener("input", () => {
+  renderPreview(splitItems($("#items").value.trim()));
+});
+
+// AI
+$("#btnAI").addEventListener("click", async () => {
+  const items = $("#items").value.trim();
+  if (!items) return alert("先輸入一些食材啦～🥺");
+
+  const btn = $("#btnAI");
+  setLoading(btn, true, "生成中…🍳", "找料理 / 叫 AI");
+
+  try {
+    const res = await fetch("/api/gemini", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items })
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data?.message || data?.error || `HTTP ${res.status}`);
+
+    renderRecipes(data.recipes || [], data.raw);
+  } catch (err) {
+    renderRecipes([], String(err.message || err));
+  } finally {
+    setLoading(btn, false, "", "找料理 / 叫 AI");
+  }
+});
+
+// ✅ 存冰箱（重點：不要重畫預覽，不然日期會被清掉）
+$("#btnSave").addEventListener("click", async () => {
+  const raw = $("#items").value.trim();
+  if (!raw) return alert("你要先輸入食材才能存啦🥺");
+
+  const items = splitItems(raw);
+  if (!items.length) return alert("拆不到任何食材欸…😂");
+
+  // ✅ 只有預覽區是空的才畫，避免清掉已選日期
+  if (!document.querySelector(".preview-row")) {
+    renderPreview(items);
+  }
+
+  const picked = readPreview(items);
+
+  const btn = $("#btnSave");
+  setLoading(btn, true, "存入中…🧊", "存到我的冰箱 🧊");
+
+  const result = { success: [], failed: [] };
+
+  try {
+    for (const it of picked) {
+      try {
+        const res = await fetch("/api/fridge", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: it.name,
+            quantity: null,
+            expire_date: it.expire_date,      // ✅ 真的送到後端
+            note: `category:${it.category}`
+          })
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data?.message || data?.error || `HTTP ${res.status}`);
+
+        result.success.push({
+          name: it.name,
+          category: it.category,
+          expire_date: it.expire_date,
+          insertedId: data.insertedId
+        });
+      } catch (e) {
+        result.failed.push({
+          name: it.name,
+          category: it.category,
+          error: e.message || String(e)
+        });
+      }
+    }
+
+    renderSaveResult(result);
+  } finally {
+    setLoading(btn, false, "", "存到我的冰箱 🧊");
+  }
+});
