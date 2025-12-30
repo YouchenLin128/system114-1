@@ -104,3 +104,32 @@ pre{
 
 .mt10{ margin-top:10px; }
 .mt12{ margin-top:12px; }
+
+/* 基本按鈕樣式 */
+.btn-small2 {
+  border: 1px solid #ff4d4f; /* 紅色邊框 */
+  color: #ff4d4f;             /* 紅色文字 */
+  background-color: transparent;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+/* 點擊或被選中狀態 */
+.btn-small2.active {
+  background-color: #ffe6e6; /* 淡紅背景 */
+}
+.delete-cross {
+  margin-left: 10px;
+  color: red;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.delete-cross:hover {
+  color: darkred;
+}
+.expiring-title {
+  color: red;
+}
