@@ -1,35 +1,63 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+/>
+
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap');
+
+
+</style>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>剩菜變料理（AI + 資料庫）</title>
+  <title>食材管理系統（AI + 資料庫）</title>
 
   <link rel="stylesheet" href="/input.css">
-  <!-- ⭐⭐⭐ 關鍵在這行 -->
   <script src="/input.js" defer></script>
 </head>
 
 <body>
-  <div class="container">
-    <header class="header">
-      <h1>剩菜能做什麼？🍳</h1>
-      <p class="muted">輸入你手上有的剩菜 / 食材（用逗號或換行分隔）</p>
+  <div class="app">
+    <header class="hero">
+      <h1 class="animate__animated animate__backInLeft">能做什麼料理？🍳 </h1>
+      <p>把冰箱裡的食材交給 AI，幫你變成料理靈感，避免食材浪費</p>
     </header>
 
-    <section class="panel">
-      <label class="label" for="items">食材輸入</label>
-      <textarea id="items"></textarea>
+    <main class="container">
+      <section class="card">
+        <label for="items" class="label">目前手上的食材</label>
+        <textarea
+          id="items"
+          placeholder="例如：豬肉, 蛋, 花椰菜, 洋蔥"
+        ></textarea>
 
-      <div class="row">
-        <button id="btnAI" type="button">找料理 / 叫 AI</button>
-        <button id="btnSave" type="button" class="btn-secondary">存到我的冰箱 🧊</button>
-        <span class="pill" id="modePill">目前模式：AI 生成</span>
-      </div>
-    </section>
+        <div class="actions">
+          <button id="btnAI" type="button" class="btn-primary">
+            🔍 AI生成料理
+          </button>
 
-    <section id="preview"></section>
-    <section id="out"></section>
+          <button id="btnSave" type="button" class="btn-secondary">
+            🧊 存到我的冰箱
+          </button>
+
+          <span class="badge" id="modePill">AI 生成模式</span>
+        </div>
+
+        <p class="hint">
+          👉 存冰箱前可在下方調整分類、填寫有效日期
+        </p>
+      </section>
+
+      <section id="preview"></section>
+      <section id="out"></section>
+    </main>
+
+    <footer class="footer">
+      <p>©系統分析與設計.食材管理系統</p>
+    </footer>
   </div>
 </body>
 </html>
