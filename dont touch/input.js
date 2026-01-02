@@ -107,55 +107,17 @@ function renderRecipes(recipes, rawText){
   });
 }
 
-const allItems = []; // 放在最上方，存所有已存入食材
+const allItems = JSON.parse(localStorage.getItem("fridgeItems") || "[]");
 
 function renderSaveResult(result){
-  // 將這次成功存入的食材加入全域陣列
+  // 原本的
   allItems.push(...result.success);
 
-  const out = $("#out");
+  // ✅ 存進 localStorage
+  localStorage.setItem("fridgeItems", JSON.stringify(allItems));
+  alert("✅ 已存入冰箱，可點右上角前往查看");
+ }
 
-  // 只清掉輸出區內容，但保留按鈕區域（或者按鈕綁在 html 最上方）
-  out.innerHTML = `
-    <div class="card">
-      <h3>✅ 已存入冰箱</h3>
-
-      <div class="btn-group mt10">
-        <button id="btnAll" class="btn-small">全部</button>
-        <button id="btnExpiring" class="btn-small2">即期</button>
-      </div>
-
-      <div id="fridgeList"></div>
-
-      <p class="muted">成功 ${result.success.length} 筆 / 失敗 ${result.failed.length} 筆</p>
-
-      <h4>失敗</h4>
-      <pre>${escapeHtml(result.failed.map(f =>
-        `- ${f.name} (${f.category}) → ${f.error}`
-      ).join("\n") || "（無）")}</pre>
-    </div>
-  `;
-
-  // 假設 btnAll 與 btnExpiring 已經選好
-const btnAll = document.getElementById("btnAll");
-const btnExpiring = document.getElementById("btnExpiring");
-
-btnAll.addEventListener("click", () => {
-  btnAll.classList.add("active");
-  btnExpiring.classList.remove("active");
-  renderFridgeList(allItems, "all");
-});
-
-btnExpiring.addEventListener("click", () => {
-  btnExpiring.classList.add("active");
-  btnAll.classList.remove("active");
-  renderFridgeList(allItems, "expiring");
-});
-
-
-  // 預設顯示全部
-  renderFridgeList(allItems, "all");
-}
 
 
 
@@ -304,3 +266,10 @@ $("#btnSave").addEventListener("click", async () => {
     setLoading(btn, false, "", "存到我的冰箱 🧊");
   }
 });
+const btnGoFridge = document.getElementById("btnGoFridge");
+
+if (btnGoFridge) {
+  btnGoFridge.addEventListener("click", () => {
+    window.location.href = "fridge.html";
+  });
+}
