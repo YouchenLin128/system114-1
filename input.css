@@ -329,3 +329,48 @@ textarea:focus {
   opacity: 1;
   transform: translateY(0);
 }
+
+
+/* 基本按鈕樣式 */
+.btn-small2 {
+  border: 1px solid #ff4d4f; /* 紅色邊框 */
+  color: #ff4d4f;             /* 紅色文字 */
+  background-color: transparent;
+  transition: background-color 0.2s;
+}
+
+/* 點擊或被選中狀態 */
+.btn-small2.active {
+  background-color: #ffe6e6; /* 淡紅背景 */
+}
+.delete-cross {
+  margin-left: 10px;
+  color: red;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.delete-cross:hover {
+  color: darkred;
+}
+.expiring-title {
+  color: red;
+}
+.top-actions {
+  display: flex;
+  justify-content: flex-end; /* 👉 靠右 */
+  margin-top: 10px;
+}
+.category-btn { padding: 5px 10px; margin-right: 5px; cursor: pointer; }
+.categoryGroup { display: none; margin-top: 10px; }
+.fridge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+.delete-cross {
+  cursor: pointer;
+}
