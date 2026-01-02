@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <title>我的冰箱</title>
+  <link rel="stylesheet" href="/input.css">
+  <style>
+    .category-btn {
+      display: inline-block;
+      padding: 4px 10px;
+      margin: 4px 6px 4px 0;
+      border-radius: 4px;
+      background-color: #eee;
+      cursor: pointer;
+    }
+    .category-btn.active {
+      background-color: #aaf;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <button id="btnBack">⬅ 返回</button>
+  </div>
+
+  <h2>🧊 我的冰箱</h2>
+
+  <!-- 全部 / 即期按鈕 -->
+  <div class="btn-group mt10">
+    <button id="btnAll" class="btn-small active">全部</button>
+    <button id="btnExpiring" class="btn-small2">即期</button>
+    <button id="btnExpired" class="btn-small2">已到期</button>
+    <button id="btnCategory" class="btn-small">類別 ▾</button>
+  </div>
+
+ <!-- 分類按鈕群組，一開始隱藏 -->
+<div id="categoryGroup" style="display:none; margin-top:5px;">
+  <button class="category-btn" data-category="蔬菜">🥬蔬菜</button>
+  <button class="category-btn" data-category="海鮮">🐟海鮮</button>
+  <button class="category-btn" data-category="肉">🥩肉</button>
+  <button class="category-btn" data-category="澱粉">🍞澱粉</button>
+  <button class="category-btn" data-category="其他">😍其他</button>
+</div>
+<div id="fridgeList"></div>
+<!-- AI 料理按鈕 --->
+<button id="btnAIAll" style="display:none">找料理（全部）</button>
+<button id="btnAIExpiring" style="display:none">找料理（即期）</button>
+
+<script src="fridge.js"></script>
+</body>
+</html>
+
