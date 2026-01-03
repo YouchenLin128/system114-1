@@ -172,27 +172,40 @@ app.post("/api/gemini", async (req, res) => {
     res.status(500).json({ error: "Gemini error" });
   }
 });
+// 一定要放在所有 API 前
+app.use(express.json());
+
 /* ------------------------------
    ✅ 冰箱：新增
 -------------------------------- */
-app.post("/api/fridge", async (req, res) => {
+app.post("/api/fridge/add", async (req, res) => {
   try {
-    const { name, quantity = null, expire_date = null, note = null } = req.body;
+    const { items } = req.body;
 
-    if (!name || !String(name).trim()) {
-      return res.status(400).json({ error: "name is required" });
+    console.log("📥 收到存冰箱資料：", items);
+
+    const [dbRow] = await db.query("SELECT DATABASE()");
+    console.log("🧠 使用中的 DB：", dbRow[0]);
+
+    const sql = `
+      INSERT INTO fridge_items (name, category, expire_date)
+      VALUES (?, ?, ?)
+    `;
+
+    for (const item of items) {
+      const [result] = await db.execute(sql, [
+        item.name,
+        item.category,
+        item.expire_date || null,
+      ]);
+
+      console.log("✅ INSERT 成功，ID =", result.insertId);
     }
 
-    const [result] = await db.execute(
-      `INSERT INTO fridge_items (name, quantity, expire_date, note)
-       VALUES (?, ?, ?, ?)`,
-      [name.trim(), quantity, expire_date || null, note]
-    );
-
-    return res.json({ ok: true, insertedId: result.insertId });
+    res.json({ success: true });
   } catch (err) {
-    console.error("❌ fridge POST error:", err);
-    return res.status(500).json({ error: "DB insert failed" });
+    console.error("❌ 寫入 MySQL 失敗：", err);
+    res.status(500).json({ success: false });
   }
 });
 
@@ -206,6 +219,7 @@ app.get("/api/fridge", async (req, res) => {
     );
     res.json({ items: rows });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "DB query failed" });
   }
 });
@@ -221,9 +235,11 @@ app.delete("/api/fridge/:id", async (req, res) => {
     await db.execute(`DELETE FROM fridge_items WHERE id = ?`, [id]);
     res.json({ ok: true });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "DB delete failed" });
   }
 });
+
 
 /* ------------------------------
    ✅ 啟動

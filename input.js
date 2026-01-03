@@ -1,5 +1,56 @@
 // 簡易 selector（只留這一個）
 const $ = (s) => document.querySelector(s);
+let currentItems = [];
+$("#items").addEventListener("input", () => {
+  const items = splitItems($("#items").value.trim());
+  currentItems = items;        // ⭐ 關鍵
+  renderPreview(items);
+});
+
+$("#btnSave").addEventListener("click", async () => {
+  if (!currentItems.length) {
+    alert("⚠️ 還沒有可存的食材喔");
+    return;
+  }
+
+  const data = readPreview(currentItems);
+
+  try {
+    await saveToFridge(data);
+
+    // ✅ 成功提示
+    alert("✅ 已成功存進我的冰箱！");
+
+    // ✅ 1. 清空輸入框
+    $("#items").value = "";
+
+    // ✅ 2. 清空預覽區
+    $("#preview").innerHTML = "";
+
+    // ✅ 3. 清空暫存資料
+    currentItems = [];
+
+  } catch (err) {
+    console.error(err);
+    alert("❌ 存冰箱失敗");
+  }
+});
+
+async function saveToFridge(items) {
+  const res = await fetch("/api/fridge/add", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ items })
+  });
+
+  if (!res.ok) {
+    throw new Error("API 回應失敗");
+  }
+
+  return res.json();
+}
 
 function setLoading(btn, isLoading, textWhenLoading, textWhenDone){
   btn.disabled = isLoading;

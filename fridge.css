@@ -1,3 +1,6 @@
+/* ===============================
+   全域設定
+================================ */
 body {
   margin: 0;
   font-family: "LXGW WenKai TC", system-ui, -apple-system, sans-serif;
@@ -5,57 +8,38 @@ body {
   color: #374151;
 }
 
-/* --- 導覽列與 Logo 修正方案 --- */
-
+/* ===============================
+   導覽列
+================================ */
 #logo {
   color: #292929;
-  font-size: 36px;              /* Pacifico 視覺上較小，建議稍微調大 */
-  font-family: 'Pacifico', cursive; /* 關鍵：指定 Pacifico 字體 */
-  font-weight: normal;          /* Pacifico 不需要額外加粗就很明顯 */
+  font-size: 36px;
+  font-family: "Pacifico", cursive;
   text-decoration: none;
-  display: inline-block;
-  transition: 0.3s;
 }
 
-/* 為了讓對齊更準確，建議更新 navWrapper */
 .navWrapper {
   width: 85%;
   margin: auto;
   padding-top: 24px;
-  display: flex;                /* 使用 flex 佈局 */
-  justify-content: space-between; /* Logo 在左，漢堡按鈕在右 */
-  align-items: center;          /* 垂直置中對齊 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* 移除原本的 float: right (如果還有在用的話) */
 .right {
   display: flex;
   align-items: center;
 }
 
-/* 漢堡按鈕必須在最上層 */
 #nav-icon {
-  position: relative;
-  z-index: 999 !important; /* 確保高於 overlay */
   cursor: pointer;
+  z-index: 999;
 }
 
-/* 全螢幕選單 */
-.overlay {
-  z-index: 998; /* 低於按鈕，但高於頁面內容 */
-  /* 其他樣式保持不變 */
-}
 /* ===============================
-   外框結構
+   Overlay Menu
 ================================ */
-.app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding-top: 100px;
-}
-
-/* 全螢幕選單預設隱藏 */
 .overlay {
   position: fixed;
   inset: 0;
@@ -64,182 +48,234 @@ body {
   pointer-events: none;
   transition: opacity 0.4s ease;
   z-index: 998;
-
   display: flex;
-  align-items: left;
-  justify-content: left;
+  align-items: center;
 }
 
-/* 打開狀態 */
 .overlay.open {
   opacity: 1;
   pointer-events: auto;
 }
 
-/* 選單內容 */
 .overlayContent {
-  text-align: left;
-
-}
-
-.overlay {
-  width: 100%;
-  height: 100%;
-  background: #151515;
-  position: fixed;
-  top: 0;
-  left: 0;
-  -webkit-transition: all 0.3s ease;
-  transition: all 0.3s ease;
-  opacity: 0;
-  z-index: 1;
-  visibility: hidden;
-  display: flex;
-  align-items: center;
-}
-
-.overlay.open {
-  opacity: 1;
-  visibility: visible;
+  margin-left: 120px;
 }
 
 .overlay a {
-  color: white;
+  display: block;
   font-size: 54px;
   font-weight: bold;
+  color: white;
   text-decoration: none;
-  display: block;
-  margin-left: 135px;
-  margin-bottom: 15px; 
+  margin-bottom: 16px;
   opacity: 0;
-  transition: transform 0.2s ease;
-  overflow: hidden;
+}
+
+.overlay a.open {
+  opacity: 1;
 }
 
 .overlay p {
-  color: #4B4B4B;
-  font-size: 20px;
-  font-weight: normal;
   position: absolute;
-  bottom: 100px;
-  margin-left: 135px;
+  bottom: 80px;
+  margin-left: 120px;
+  color: #6b7280;
   opacity: 0;
 }
 
 .overlay p.open {
   opacity: 1;
-  animation: 1.70s fadeInCopyright ease;
-}
-
-@keyframes fadeInCopyright {
-  0%{
-    opacity: 0;
-  }
-  80%{
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  100%{
-    opacity: 1;
-  }
-}
-
-.overlay a:after {
-  position: absolute;
-  transition: .3s;
-  content: '';
-  width: 0;
-  left: 50%;
-  bottom: 0;
-  height: 3px;
-  background: white;
-  left: 0;
-}
-
-.overlay a:hover:after {
-  width: 100%;
-  left: 0;
-}
-
-.overlay a.open:hover {
-  transform: translateY(2px);
-}
-
-.overlay a.open:nth-child(1) {
-  opacity: 1;
-  animation: 1s fadeInLinks1 ease;
-}
-
-@keyframes fadeInLinks1 {
-  0%{
-    opacity: 0;
-  }
-  50%{
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  100%{
-    opacity: 1;
-  }
-}
-
-.overlay a.open:nth-child(2) {
-  opacity: 1;
-  animation: 1.25s fadeInLinks2 ease;
-}
-
-@keyframes fadeInLinks2 {
-  0%{
-    opacity: 0;
-  }
-  60%{
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  100%{
-    opacity: 1;
-  }
-}
-
-.overlay a.open:nth-child(3) {
-  opacity: 1;
-  animation: 1.5s fadeInLinks3 ease;
-} 
-  
-@keyframes fadeInLinks3 {
-  0%{
-    opacity: 0;
-  }
-  70%{
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  100%{
-    opacity: 1;
-  }
-} 
-
-#services {
-  width: 201px;
-}
-
-#work {
-  width: 224px;
-}
-
-#contact {
-  width: 187px;
-}
-
-.header {
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 /* ===============================
-   Footer 文字
+   主內容
+================================ */
+.fridge-page {
+  max-width: 960px;
+  margin: 120px auto 60px;
+  padding: 0 24px;
+}
+
+.fridge-page h2 {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* ===============================
+   按鈕列
+================================ */
+.btn-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.btn-small,
+.btn-small2 {
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-small {
+  background: #6366f1;
+  color: white;
+}
+
+.btn-small.active {
+  background: #4f46e5;
+}
+
+.btn-small2 {
+  border: 1px solid #ff4d4f;
+  background: transparent;
+  color: #ff4d4f;
+}
+
+.btn-small2.active {
+  background: #ffe6e6;
+}
+
+/* ===============================
+   分類按鈕
+================================ */
+#categoryGroup {
+  display: none;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.category-btn {
+  border-radius: 999px;
+  padding: 6px 14px;
+  background: #eef2ff;
+  border: none;
+  cursor: pointer;
+}
+
+/* ===============================
+   冰箱清單
+================================ */
+#fridgeList h3 {
+  margin-bottom: 12px;
+}
+
+.fridge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  border-radius: 16px;
+
+  background: rgba(255,255,255,0.95);
+  box-shadow:
+    0 6px 16px rgba(0,0,0,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.8);
+
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fridge-row:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 24px rgba(0,0,0,0.14),
+    inset 0 1px 0 rgba(255,255,255,1);
+}
+
+/* 被選取的食材 */
+.fridge-row.selected {
+  outline: 2px solid #6366f1;
+  background-color: #eef2ff !important;
+}
+
+/* 刪除 */
+.delete-cross {
+  margin-left: 12px;
+  color: #ef4444;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.delete-cross:hover {
+  color: #b91c1c;
+}
+
+/* ===============================
+   AI 按鈕
+================================ */
+#btnAIAll,
+#btnAIExpiring {
+  display: block;
+  margin: 20px auto;
+  border-radius: 999px;
+  padding: 10px 20px;
+  background: #10b981;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+#btnAIAll:hover,
+#btnAIExpiring:hover {
+  background: #059669;
+}
+
+/* ===============================
+   AI 食譜卡片
+================================ */
+.recipe-card {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 24px;
+  margin-top: 24px;
+
+  box-shadow: 0 14px 34px rgba(0,0,0,0.10);
+}
+
+.recipe-text h3 {
+  margin-top: 0;
+}
+
+.recipe-text pre {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.recipe-image {
+  border-radius: 18px;
+  overflow: hidden;
+  background: #f1f5f9;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recipe-image img {
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  object-fit: cover;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 140px 24px 48px; /* 👈 上面一定要撐開 */
+}
+
+/* ===============================
+   Footer
 ================================ */
 .footer {
   margin-top: 80px;
