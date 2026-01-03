@@ -2,9 +2,15 @@
 <html lang="zh-Hant">
 
 <head>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Pacifico&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/homepage.css">
   <meta charset="UTF-8">
   <title>我的冰箱</title>
-  <link rel="stylesheet" href="/input.css">
+  <link rel="stylesheet" href="/fridge.css">
   <style>
     .category-btn {
       display: inline-block;
@@ -20,10 +26,35 @@
   </style>
 </head>
 <body>
-  <div class="top-bar">
-    <button id="btnBack">⬅ 返回</button>
-  </div>
+   <div class="background">
 
+    <nav>
+      <div class="navWrapper">
+        <a href="homepage.html" id="logo">Cuisine</a>
+
+        <div class="right">
+          <div id="nav-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 全螢幕選單（不放在 nav 裡） -->
+    <div class="overlay">
+      <div class="overlayContent">
+        <a href="input.html">加食材</a>
+        <a href="fridge.html">食材分類</a>
+        <a href="#">Contact</a>
+        <p>© 系統分析與設計・食材管理系統</p>
+      </div>
+    </div>
+
+  </nav>  
+  
+<div class="fridge-page">
   <h2>🧊 我的冰箱</h2>
 
   <!-- 全部 / 即期按鈕 -->
@@ -46,8 +77,14 @@
 <!-- AI 料理按鈕 --->
 <button id="btnAIAll" style="display:none">找料理（全部）</button>
 <button id="btnAIExpiring" style="display:none">找料理（即期）</button>
-
 <script src="fridge.js"></script>
-</body>
-</html>
+</div>
 
+
+
+    <footer class="footer">
+      <p>©系統分析與設計.食材管理系統</p>
+    </footer>
+</body>
+
+</html>

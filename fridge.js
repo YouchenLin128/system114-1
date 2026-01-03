@@ -1,5 +1,33 @@
 const $ = (s) => document.querySelector(s);
 
+// DOM ready（原生）
+document.addEventListener("DOMContentLoaded", () => {
+  const navIcon = $("#nav-icon");
+  const overlay = document.querySelector(".overlay");
+
+  if (!navIcon || !overlay) {
+    console.error("找不到 nav-icon 或 overlay");
+    return;
+  }
+
+  navIcon.addEventListener("click", () => {
+    console.log("nav clicked"); // ← 一定要看到
+    navIcon.classList.toggle("open");
+    overlay.classList.toggle("open");
+
+    overlay.querySelectorAll("a").forEach(a =>
+      a.classList.toggle("open")
+    );
+    overlay.querySelector("p")?.classList.toggle("open");
+  });
+});
+
+
+
+
+
+
+
 // 讀取 localStorage
 let allItems = JSON.parse(localStorage.getItem("fridgeItems") || "[]");
 let currentMode = "all";      // all / expiring / expired

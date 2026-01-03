@@ -1,33 +1,61 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-/>
-
-  <style>
-@import url('https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap');
-
-
-</style>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>食材管理系統（AI + 資料庫）</title>
 
-  <link rel="stylesheet" href="/input.css">
-  <script src="/input.js" defer></script>
+
+
+
+  <!-- 字體 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Pacifico&display=swap" rel="stylesheet">
+
+  <!-- 頁面樣式 -->
+  <link rel="stylesheet" href="./homepage.css">
+  <link rel="stylesheet" href="./input.css">
+
+  <!-- JS -->
+  <script src="./input.js" defer></script>
 </head>
 
+
+
 <body>
+
+ <div class="background">
+
+    <nav>
+      <div class="navWrapper">
+        <a href="homepage.html" id="logo">Cuisine</a>
+
+        <div class="right">
+          <div id="nav-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 全螢幕選單（不放在 nav 裡） -->
+    <div class="overlay">
+      <div class="overlayContent">
+        <a href="input.html">加食材</a>
+        <a href="fridge.html">食材分類</a>
+        <a href="#">Contact</a>
+        <p>© 系統分析與設計・食材管理系統</p>
+      </div>
+    </div>
+
+  </nav>  
   <div class="app">
     <header class="hero">
       <h1 class="animate__animated animate__backInLeft">能做什麼料理？🍳 </h1>
       <p>把冰箱裡的食材交給 AI，幫你變成料理靈感，避免食材浪費</p>
-      <div class="top-actions">
-  <button id="btnGoFridge" class="btn-small">
-    🧊 前往我的冰箱
-  </button>
     </header>
 
     <main class="container">
@@ -65,4 +93,3 @@
   </div>
 </body>
 </html>
-

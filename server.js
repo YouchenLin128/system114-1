@@ -118,11 +118,11 @@ app.post("/api/gemini", async (req, res) => {
     const prompt = `
 你是料理助理，請根據使用者提供的食材，產生「剛好 5 道」料理。
 
-規則：
-- 不新增主食材（可加常見調味料）
-- 請只輸出 JSON
+⚠️ 非常重要：
+- 回覆內容必須是「純 JSON」
+- 不要任何解釋文字
 - 不要 markdown
-- steps 為純文字，使用換行
+- 開頭必須是 { 結尾必須是 }
 
 格式：
 {
@@ -141,30 +141,37 @@ app.post("/api/gemini", async (req, res) => {
     const result = await model.generateContent(prompt);
     const text = result.response.text();
 
+    console.log("🤖 Gemini raw response:\n", text);
+
     let recipes = [];
 
     try {
       const parsed = JSON.parse(text);
       recipes = parsed.recipes || [];
     } catch {
-      return res.json({ recipes: [], raw: text });
+      const match = text.match(/\{[\s\S]*\}/);
+      if (match) {
+        try {
+          const fixed = JSON.parse(match[0]);
+          recipes = fixed.recipes || [];
+        } catch {}
+      }
     }
 
-    // 🔥 每道料理補一張圖片
+    if (!recipes.length) {
+      return res.json({ recipes: [] });
+    }
+
     for (const r of recipes) {
       r.image = await searchUnsplashImage(r.title);
     }
 
-    return res.json({ recipes });
+    res.json({ recipes });
   } catch (err) {
     console.error("❌ Gemini error:", err);
-    return res.status(500).json({
-      error: "Gemini error",
-      message: err.message,
-    });
+    res.status(500).json({ error: "Gemini error" });
   }
 });
-
 /* ------------------------------
    ✅ 冰箱：新增
 -------------------------------- */

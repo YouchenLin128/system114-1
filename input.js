@@ -1,3 +1,4 @@
+// 簡易 selector（只留這一個）
 const $ = (s) => document.querySelector(s);
 
 function setLoading(btn, isLoading, textWhenLoading, textWhenDone){
@@ -20,6 +21,32 @@ function splitItems(raw){
     .map(s => s.trim())
     .filter(Boolean);
 }
+
+// DOM ready（原生）
+document.addEventListener("DOMContentLoaded", () => {
+  const navIcon = $("#nav-icon");
+  const overlay = document.querySelector(".overlay");
+
+  if (!navIcon || !overlay) {
+    console.error("找不到 nav-icon 或 overlay");
+    return;
+  }
+
+  navIcon.addEventListener("click", () => {
+    console.log("nav clicked"); // ← 一定要看到
+    navIcon.classList.toggle("open");
+    overlay.classList.toggle("open");
+
+    overlay.querySelectorAll("a").forEach(a =>
+      a.classList.toggle("open")
+    );
+    overlay.querySelector("p")?.classList.toggle("open");
+  });
+});
+
+
+
+
 
 /* ===============================
    食材分類
@@ -186,4 +213,3 @@ function observeReveals() {
     observer.observe(el);
   });
 }
-s

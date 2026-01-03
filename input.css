@@ -1,3 +1,5 @@
+
+
 /* ===============================
    全站基礎設定
 ================================ */
@@ -8,11 +10,50 @@
 body {
   margin: 0;
   font-family: "LXGW WenKai TC", system-ui, -apple-system, sans-serif;
-  background: #f6f7f9;
-  color: #1f2937;
+  background-color: #f7f3f5;
+  color: #374151;
 }
 
+/* --- 導覽列與 Logo 修正方案 --- */
 
+#logo {
+  color: #292929;
+  font-size: 36px;              /* Pacifico 視覺上較小，建議稍微調大 */
+  font-family: 'Pacifico', cursive; /* 關鍵：指定 Pacifico 字體 */
+  font-weight: normal;          /* Pacifico 不需要額外加粗就很明顯 */
+  text-decoration: none;
+  display: inline-block;
+  transition: 0.3s;
+}
+
+/* 為了讓對齊更準確，建議更新 navWrapper */
+.navWrapper {
+  width: 85%;
+  margin: auto;
+  padding-top: 24px;
+  display: flex;                /* 使用 flex 佈局 */
+  justify-content: space-between; /* Logo 在左，漢堡按鈕在右 */
+  align-items: center;          /* 垂直置中對齊 */
+}
+
+/* 移除原本的 float: right (如果還有在用的話) */
+.right {
+  display: flex;
+  align-items: center;
+}
+
+/* 漢堡按鈕必須在最上層 */
+#nav-icon {
+  position: relative;
+  z-index: 999 !important; /* 確保高於 overlay */
+  cursor: pointer;
+}
+
+/* 全螢幕選單 */
+.overlay {
+  z-index: 998; /* 低於按鈕，但高於頁面內容 */
+  /* 其他樣式保持不變 */
+}
 /* ===============================
    外框結構
 ================================ */
@@ -20,6 +61,190 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-top: 100px;
+}
+
+/* 全螢幕選單預設隱藏 */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.92);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 998;
+
+  display: flex;
+  align-items: left;
+  justify-content: left;
+}
+
+/* 打開狀態 */
+.overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 選單內容 */
+.overlayContent {
+  text-align: left;
+
+}
+
+.overlay {
+  width: 100%;
+  height: 100%;
+  background: #151515;
+  position: fixed;
+  top: 0;
+  left: 0;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+  opacity: 0;
+  z-index: 1;
+  visibility: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.overlay a {
+  color: white;
+  font-size: 54px;
+  font-weight: bold;
+  text-decoration: none;
+  display: block;
+  margin-left: 135px;
+  margin-bottom: 15px; 
+  opacity: 0;
+  transition: transform 0.2s ease;
+  overflow: hidden;
+}
+
+.overlay p {
+  color: #4B4B4B;
+  font-size: 20px;
+  font-weight: normal;
+  position: absolute;
+  bottom: 100px;
+  margin-left: 135px;
+  opacity: 0;
+}
+
+.overlay p.open {
+  opacity: 1;
+  animation: 1.70s fadeInCopyright ease;
+}
+
+@keyframes fadeInCopyright {
+  0%{
+    opacity: 0;
+  }
+  80%{
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100%{
+    opacity: 1;
+  }
+}
+
+.overlay a:after {
+  position: absolute;
+  transition: .3s;
+  content: '';
+  width: 0;
+  left: 50%;
+  bottom: 0;
+  height: 3px;
+  background: white;
+  left: 0;
+}
+
+.overlay a:hover:after {
+  width: 100%;
+  left: 0;
+}
+
+.overlay a.open:hover {
+  transform: translateY(2px);
+}
+
+.overlay a.open:nth-child(1) {
+  opacity: 1;
+  animation: 1s fadeInLinks1 ease;
+}
+
+@keyframes fadeInLinks1 {
+  0%{
+    opacity: 0;
+  }
+  50%{
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100%{
+    opacity: 1;
+  }
+}
+
+.overlay a.open:nth-child(2) {
+  opacity: 1;
+  animation: 1.25s fadeInLinks2 ease;
+}
+
+@keyframes fadeInLinks2 {
+  0%{
+    opacity: 0;
+  }
+  60%{
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100%{
+    opacity: 1;
+  }
+}
+
+.overlay a.open:nth-child(3) {
+  opacity: 1;
+  animation: 1.5s fadeInLinks3 ease;
+} 
+  
+@keyframes fadeInLinks3 {
+  0%{
+    opacity: 0;
+  }
+  70%{
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100%{
+    opacity: 1;
+  }
+} 
+
+#services {
+  width: 201px;
+}
+
+#work {
+  width: 224px;
+}
+
+#contact {
+  width: 187px;
+}
+
+.header {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* ===============================
@@ -46,29 +271,36 @@ body {
    主內容區
 ================================ */
 .container {
-  max-width: 820px;
-  margin: -24px auto 0;
-  padding: 0 16px 48px;
+  max-width: 1280px;    
+  margin: 32px auto 0;   
+  padding: 0 24px 48px;
   width: 100%;
 }
+
 
 /* ===============================
    卡片通用樣式
 ================================ */
+
 .card {
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 24px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  background: linear-gradient(180deg, #ffffff, #f9fafb);
+  border-radius: 22px;
+  padding: 28px 32px;
+  max-width: 760px;     /* 👈 卡片自己也放寬 */
+  margin: 0 auto;   
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.8);
 }
 
 /* ===============================
    表單元素
 ================================ */
-.label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
+.card .label {
+  font-size: 18px;
+  font-weight: 1000;
+  margin-bottom: 12px;
+  color: #111827;
 }
 
 textarea {
