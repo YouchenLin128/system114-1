@@ -118,6 +118,7 @@ body {
   font-size: 14px;
   cursor: pointer;
   border: none;
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .btn-small {
@@ -127,6 +128,12 @@ body {
 
 .btn-small.active {
   background: #4f46e5;
+}
+
+/* 主按鈕被選中時放大 */
+.btn-small.active,
+.btn-small2.active{
+  transform: scale(1.2);
 }
 
 .btn-small2 {
@@ -283,3 +290,4 @@ body {
   font-size: 12px;
   color: #9ca3af;
 }
+
