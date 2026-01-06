@@ -1,92 +1,86 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-
 <head>
+  <meta charset="UTF-8" />
+  <title>我的冰箱</title>
 
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Pacifico&display=swap" rel="stylesheet">
-  
+
+  <!-- CSS -->
   <link rel="stylesheet" href="/homepage.css">
-  <meta charset="UTF-8">
-  <title>我的冰箱</title>
   <link rel="stylesheet" href="/fridge.css">
-  <style>
-    .category-btn {
-      display: inline-block;
-      padding: 4px 10px;
-      margin: 4px 6px 4px 0;
-      border-radius: 4px;
-      background-color: #eee;
-      cursor: pointer;
-    }
-    .category-btn.active {
-      background-color: #aaf;
-    }
-  </style>
+
+   <!-- JS -->
+  <script src="./fridge.js" defer></script>
 </head>
+
 <body>
-   <div class="background">
 
-    <nav>
-      <div class="navWrapper">
-        <a href="homepage.html" id="logo">Cuisine</a>
-
-        <div class="right">
-          <div id="nav-icon">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
+  <!-- NAV -->
+  <nav>
+    <div class="navWrapper">
+      <a href="homepage.html" id="logo">Cuisine</a>
+      <div class="right">
+        <div id="nav-icon">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
       </div>
-    </nav>
-
-    <!-- 全螢幕選單（不放在 nav 裡） -->
-    <div class="overlay">
-      <div class="overlayContent">
-        <a href="input.html">加食材</a>
-        <a href="fridge.html">食材分類</a>
-        <a href="#">Contact</a>
-        <p>© 系統分析與設計・食材管理系統</p>
-      </div>
     </div>
+  </nav>
 
-  </nav>  
-  
-<div class="fridge-page">
-  <h2>🧊 我的冰箱</h2>
-
-  <!-- 全部 / 即期按鈕 -->
-  <div class="btn-group mt10">
-    <button id="btnAll" class="btn-small active">全部</button>
-    <button id="btnExpiring" class="btn-small2">即期</button>
-    <button id="btnExpired" class="btn-small2">已到期</button>
-    <button id="btnCategory" class="btn-small">類別 ▾</button>
+  <!-- Overlay -->
+  <div class="overlay">
+  <button class="overlay-close" aria-label="Close">✕</button>
+    <div class="overlayContent">
+      <a href="input.html">加食材</a>
+      <a href="fridge.html">我的冰箱</a>
+      <a href="#">分工表</a>
+      <p>© 系統分析與設計・食材管理系統</p>
+    </div>
   </div>
 
- <!-- 分類按鈕群組，一開始隱藏 -->
-<div id="categoryGroup" style="display:none; margin-top:5px;">
-  <button class="category-btn" data-category="蔬菜">🥬蔬菜</button>
-  <button class="category-btn" data-category="海鮮">🐟海鮮</button>
-  <button class="category-btn" data-category="肉">🥩肉</button>
-  <button class="category-btn" data-category="澱粉">🍞澱粉</button>
-  <button class="category-btn" data-category="其他">😍其他</button>
-</div>
-<div id="fridgeList"></div>
-<!-- AI 料理按鈕 --->
-<button id="btnAIAll" style="display:none">找料理（全部）</button>
-<button id="btnAIExpiring" style="display:none">找料理（即期）</button>
-<section id="out"></section>
-<script src="fridge.js"></script>
+  <!-- 主內容 -->
+  <main class="fridge-page">
+    <section class="fridge-card">
 
-</div>
+      <h2 class="fridge-title">🧊 我的冰箱</h2>
 
+      <div class="btn-group">
+        <button id="btnAll" class="btn-small active">全部</button>
+        <button id="btnExpiring" class="btn-small2">即期</button>
+        <button id="btnExpired" class="btn-small2">已到期</button>
+        <button id="btnCategory" class="btn-small">類別 ▾</button>
+      </div>
 
+      <div id="categoryGroup">
+        <button class="category-btn" data-category="蔬菜">🥬 蔬菜</button>
+        <button class="category-btn" data-category="海鮮">🐟 海鮮</button>
+        <button class="category-btn" data-category="肉">🥩 肉</button>
+        <button class="category-btn" data-category="澱粉">🍞 澱粉</button>
+        <button class="category-btn" data-category="其他">✨ 其他</button>
+      </div>
 
-    <footer class="footer">
-      <p>©系統分析與設計.食材管理系統</p>
-    </footer>
+      <div id="fridgeList"></div>
+
+      <button id="btnAIAll">找料理（全部）</button>
+      <button id="btnAIExpiring">找料理（即期）</button>
+
+      <!-- AI 輸出 -->
+      <section id="out"></section>
+
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 系統分析與設計・食材管理系統</p>
+  </footer>
+
+  <!-- JS -->
+  <script src="fridge.js"></script>
 </body>
-
 </html>

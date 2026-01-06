@@ -24,27 +24,69 @@ function formatDate(dateStr) {
 ================================ */
 let allItems = [];
 let selectedItems = [];
-let currentMode = "all"; // all / expiring / expired
+let currentMode = "all";
 let currentCategory = null;
+
+/* ===============================
+   Overlay 控制
+================================ */
+function openOverlay() {
+  document.querySelector(".overlay")?.classList.add("open");
+  document.querySelector("#nav-icon")?.classList.add("open");
+
+  document.querySelectorAll(".overlay a")
+    .forEach(a => a.classList.add("open"));
+
+  document.querySelector(".overlay p")
+    ?.classList.add("open");
+
+  document.body.classList.add("menu-open");
+}
+
+function closeOverlay() {
+  document.querySelector(".overlay")?.classList.remove("open");
+  document.querySelector("#nav-icon")?.classList.remove("open");
+
+  document.querySelectorAll(".overlay a")
+    .forEach(a => a.classList.remove("open"));
+
+  document.querySelector(".overlay p")
+    ?.classList.remove("open");
+
+  document.body.classList.remove("menu-open");
+}
 
 /* ===============================
    DOM Ready
 ================================ */
 document.addEventListener("DOMContentLoaded", () => {
-  // 導覽列
+
+  /* --- 導覽列 --- */
   const navIcon = $("#nav-icon");
   const overlay = $(".overlay");
+  const closeBtn = $(".overlay-close");
 
-  if (navIcon && overlay) {
-    navIcon.addEventListener("click", () => {
-      navIcon.classList.toggle("open");
-      overlay.classList.toggle("open");
-      overlay.querySelectorAll("a").forEach(a => a.classList.toggle("open"));
-      overlay.querySelector("p")?.classList.toggle("open");
-    });
-  }
+  navIcon?.addEventListener("click", () => {
+    overlay.classList.contains("open")
+      ? closeOverlay()
+      : openOverlay();
+  });
 
-  // 按鈕
+  closeBtn?.addEventListener("click", closeOverlay);
+
+  overlay?.addEventListener("click", (e) => {
+    if (e.target.classList.contains("overlay")) {
+      closeOverlay();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeOverlay();
+    }
+  });
+
+  /* --- 模式切換 --- */
   $("#btnAll")?.addEventListener("click", () => switchMode("all"));
   $("#btnExpiring")?.addEventListener("click", () => switchMode("expiring"));
   $("#btnExpired")?.addEventListener("click", () => switchMode("expired"));
@@ -63,9 +105,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  /* --- AI --- */
   $("#btnAIAll")?.addEventListener("click", () => {
     if (!selectedItems.length) {
-      alert("請先點選要用來料理的食材 🧊");
+      alert("請先點選食材 🧊");
       return;
     }
     callAIFromFridge(selectedItems);
@@ -83,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     if (!expiring.length) {
-      alert("沒有即期食材可以料理 🥲");
+      alert("沒有即期食材 🥲");
       return;
     }
 
@@ -108,7 +151,7 @@ function switchMode(mode) {
 }
 
 /* ===============================
-   讀取冰箱
+   讀取資料
 ================================ */
 async function loadFridgeFromDB() {
   try {
@@ -117,9 +160,8 @@ async function loadFridgeFromDB() {
     allItems = data.items || [];
     selectedItems = [];
     applyFilter();
-  } catch (err) {
-    console.error(err);
-    alert("無法讀取冰箱資料");
+  } catch {
+    alert("冰箱讀取失敗");
   }
 }
 
@@ -190,36 +232,33 @@ function renderFridgeList(items) {
       if (e.target.classList.contains("delete-cross")) return;
 
       const i = selectedItems.findIndex(s => s.id === item.id);
-      if (i === -1) selectedItems.push(item);
-      else selectedItems.splice(i, 1);
-
+      i === -1 ? selectedItems.push(item) : selectedItems.splice(i, 1);
       renderFridgeList(items);
     });
 
-    let textColor = "inherit";
-    let fontWeight = "normal";
     let name = escapeHtml(item.name);
+    let style = "";
 
     if (item.expire_date) {
       const d = new Date(item.expire_date);
       if (d < now) {
         name = "💀 " + name;
-        textColor = "red";
-        fontWeight = "bold";
+        style = "color:red;font-weight:bold;";
       } else if (d <= twoDaysLater) {
-        textColor = "red";
+        style = "color:red;";
       }
     }
 
-    row.style.backgroundColor =
-      item.category === "蔬菜" ? "#d4edda" :
-      item.category === "海鮮" ? "#d1ecf1" :
-      item.category === "肉" ? "#f8d7da" :
-      item.category === "澱粉" ? "#fff3cd" :
-      "#e2e3e5";
+// 分類背景色（一定要在 innerHTML 前面）
+row.style.backgroundColor =
+  item.category === "蔬菜" ? "#d4edda" :
+  item.category === "海鮮" ? "#d1ecf1" :
+  item.category === "肉" ? "#f8d7da" :
+  item.category === "澱粉" ? "#fff3cd" :
+  "#e2e3e5";
 
     row.innerHTML = `
-      <span style="color:${textColor}; font-weight:${fontWeight}">
+      <span style="${style}">
         ${name}（${item.category}） 到期：${formatDate(item.expire_date)}
       </span>
       <span class="delete-cross" data-id="${item.id}">❌</span>
@@ -238,7 +277,7 @@ function renderFridgeList(items) {
 }
 
 /* ===============================
-   AI 顯示控制
+   AI 按鈕顯示
 ================================ */
 function updateAIBtn() {
   $("#btnAIAll").style.display =
@@ -249,7 +288,7 @@ function updateAIBtn() {
 }
 
 /* ===============================
-   呼叫 AI
+   AI 呼叫
 ================================ */
 async function callAIFromFridge(items) {
   const out = $("#out");
@@ -266,9 +305,8 @@ async function callAIFromFridge(items) {
 
     const data = await res.json();
     renderRecipes(data.recipes || []);
-  } catch (err) {
-    console.error(err);
-    out.innerHTML = `<p style="color:red">AI 生成失敗</p>`;
+  } catch {
+    out.innerHTML = `<p style="color:red">AI 失敗</p>`;
   }
 }
 
@@ -277,29 +315,46 @@ async function callAIFromFridge(items) {
 ================================ */
 function renderRecipes(recipes) {
   const out = $("#out");
-  out.innerHTML = `<p class="muted">✨ 由 AI 生成</p>`;
-
-  if (!recipes.length) {
-    out.innerHTML += "<p>找不到料理 🥲</p>";
-    return;
-  }
+  out.innerHTML = `<p class="muted">✨ AI 生成</p>`;
 
   recipes.forEach(r => {
     const card = document.createElement("div");
     card.className = "recipe-card reveal";
-
     card.innerHTML = `
       <div class="recipe-text">
         <h3>${escapeHtml(r.title)}</h3>
-        <p class="muted">${escapeHtml(r.description)}</p>
-        <h4>步驟</h4>
+        <p>${escapeHtml(r.description)}</p>
         <pre>${escapeHtml(r.steps)}</pre>
       </div>
       <div class="recipe-image">
         ${r.image ? `<img src="${r.image}" loading="lazy">` : "無圖片"}
       </div>
     `;
-
     out.appendChild(card);
   });
+
+  observeReveals();
+  requestAnimationFrame(() => {
+    out.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}
+
+/* ===============================
+   動畫 Observer
+================================ */
+const observer = new IntersectionObserver(
+  entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("show");
+        observer.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.2 }
+);
+
+function observeReveals() {
+  document.querySelectorAll(".reveal:not(.show)")
+    .forEach(el => observer.observe(el));
 }
